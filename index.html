@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+</head>
+
+<body style="text-align: center;">
+    <h2 style="color: black; font-weight: bolder;">Weather Api</h2>
+    <p style="font-weight: bold; font-size: 14px;">Enter City Name :</p>
+    <input type="text" id="cityName" style="width: 200px; height: 25px;" required>
+    <br>
+    <br>
+    <button style="width: 200px; border-radius: 15px; height: 45px; color: white; background-color: black;"
+        onclick="getCurrentWeather()">Check Temperature And Weather</button>
+    <button style="width: 200px; border-radius: 15px; height: 45px; color: white; background-color: black;"
+        onclick="getLocation()">Check Whole Weekend Temperature</button>
+    <h4 id="temp"></h4>
+    <p id="result"></p>
+    <h4 id="weather"></h4>
+    <p id="result1"></p>
+    <h4 id="daily"></h4>
+    <p id="result31"></p>
+    <p id="result32"></p>
+    <p id="result33"></p>
+    <p id="result34"></p>
+    <p id="result35"></p>
+    <p id="result36"></p>
+    <p id="result37"></p>
+
+
+
+
+
+
+    <script>
+        function getCurrentWeather() {
+
+            const cityName = document.getElementById("cityName").value;
+            const apiKey = "323dfcc99ccbcc29fe092c8adbb757bf"
+            axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${cityName ? cityName : 'Karachi'}&appid=${apiKey}&units=metric`)
+
+                .then(function (response) {
+                    console.log(response);
+                    console.log(response.data.main.temp);
+                    document.getElementById('temp').innerHTML = "Temperature"
+                    document.getElementById("result").innerText = `Current Temp:${response.data.main.temp}, Feels_Like:${response.data.main.feels_like}, Max Temp:${response.data.main.temp_max}, Min Temp:${response.data.main.temp_min} `;
+                    document.getElementById('weather').innerHTML = "Weather"
+                    response.data.weather.map((each) => {
+                        document.getElementById("result1").innerText = `Condition:${each.main}, Description:${each.description}`;
+                    })
+
+                })
+        }
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(getHourlyForecast);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function getHourlyForecast(position) {
+            console.log('fu')
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            const cityName = document.getElementById("cityName").value;
+            const apiKey = "323dfcc99ccbcc29fe092c8adbb757bf";
+            const days=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
+            axios.get(`https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`)
+
+                .then(function (response) {
+                    console.log(response);
+                    console.log(response.data.current.temp);
+                    document.getElementById('daily').innerHTML = "Whole Weekend Temperature"
+                    response.data.daily.map((eachDay, index) => {
+                        console.log(eachDay)
+                        document.getElementById(`result3${index + 1}`).innerHTML = `${days[index]}:
+                        Day:${eachDay.temp.day},
+                        Evening: ${eachDay.temp.eve},
+                        Morning:${eachDay.temp.morn}
+                        Night: ${eachDay.temp.night}
+`
+                    })
+                    // document.getElementById("result").innerText = `${response.data.current.temp}`;
+                })
+
+        }
+    </script>
+
+</body>
+
+</html>
